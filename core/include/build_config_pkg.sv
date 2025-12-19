@@ -18,8 +18,7 @@ package build_config_pkg;
     bit XF16ALTVec = CVA6Cfg.XF16ALT & CVA6Cfg.XFVec & FLen>16; // FP16ALT vectors available if vectors and larger fmt enabled
     bit XF8Vec     = CVA6Cfg.XF8     & CVA6Cfg.XFVec & FLen>8;  // FP8 vectors available if vectors and larger fmt enabled
 
-    bit EnableAccelerator = CVA6Cfg.EnableAccelerator;  // Enable custom accelerators
-    bit EnableADDX = CVA6Cfg.EnableADDX;  // ADDX custom accelerator enabled
+    bit EnableAccelerator = CVA6Cfg.RVV;  // Currently only used by V extension (Ara)
     int unsigned NrWbPorts = (CVA6Cfg.CvxifEn || EnableAccelerator) ? 5 : 4;
 
     int unsigned ICACHE_INDEX_WIDTH = $clog2(CVA6Cfg.IcacheByteSize / CVA6Cfg.IcacheSetAssoc);
@@ -97,7 +96,7 @@ package build_config_pkg;
     // cfg.NrRgprPorts = unsigned'(CVA6Cfg.SuperscalarEn ? 6 : 3);
     cfg.NrWbPorts = unsigned'(NrWbPorts);
     cfg.EnableAccelerator = bit'(EnableAccelerator);
-    cfg.EnableADDX = bit'(EnableADDX);
+    cfg.EnableADDX = CVA6Cfg.EnableADDX;
     cfg.PerfCounterEn = CVA6Cfg.PerfCounterEn;
     cfg.MmuPresent = CVA6Cfg.MmuPresent;
     cfg.RVS = CVA6Cfg.RVS;
@@ -131,6 +130,11 @@ package build_config_pkg;
     cfg.CachedRegionLength = CVA6Cfg.CachedRegionLength;
     cfg.MaxOutstandingStores = CVA6Cfg.MaxOutstandingStores;
     cfg.DebugEn = CVA6Cfg.DebugEn;
+    cfg.SDTRIG = CVA6Cfg.SDTRIG;
+    cfg.Mcontrol6 = CVA6Cfg.Mcontrol6;
+    cfg.Icount = CVA6Cfg.Icount;
+    cfg.Etrigger = CVA6Cfg.Etrigger;
+    cfg.Itrigger = CVA6Cfg.Itrigger;
     cfg.NonIdemPotenceEn = (CVA6Cfg.NrNonIdempotentRules > 0) && (CVA6Cfg.NonIdempotentLength > 0);
     cfg.AxiBurstWriteEn = CVA6Cfg.AxiBurstWriteEn;
 
@@ -163,7 +167,7 @@ package build_config_pkg;
     cfg.WtDcacheWbufDepth = CVA6Cfg.WtDcacheWbufDepth;
     cfg.FETCH_USER_WIDTH = CVA6Cfg.FetchUserWidth;
     cfg.FETCH_USER_EN = CVA6Cfg.FetchUserEn;
-    cfg.AXI_USER_EN = bit'(CVA6Cfg.DataUserEn | CVA6Cfg.FetchUserEn);
+    cfg.AXI_USER_EN = CVA6Cfg.DataUserEn | CVA6Cfg.FetchUserEn;
 
     cfg.FETCH_WIDTH = unsigned'(CVA6Cfg.SuperscalarEn ? 64 : 32);
     cfg.FETCH_ALIGN_BITS = $clog2(cfg.FETCH_WIDTH / 8);

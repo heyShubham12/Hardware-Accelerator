@@ -30,36 +30,36 @@ module addx_accel
   // This can be customized based on your specific requirements
 
   always_comb begin
-    // Default: Enhanced addition with overflow detection
+    // ADDX: Saturating addition with signed overflow detection
+    // Matches Spike ISS implementation
     extended_result = fu_data_i.operand_a + fu_data_i.operand_b;
 
-    // Basic ADDX: addition with overflow saturation
     if (CVA6Cfg.IS_XLEN32) begin
-      // For 32-bit: Check for overflow
-      if (extended_result[32]) begin
-        // Overflow occurred - saturate based on operand signs
-        if (fu_data_i.operand_a[31] == fu_data_i.operand_b[31]) begin
-          // Same signs - saturate to max/min
-          addx_result = fu_data_i.operand_a[31] ? 32'h80000000 : 32'h7FFFFFFF;
-        end else begin
-          // Different signs - no overflow possible, just use result
-          addx_result = extended_result[31:0];
-        end
-      end else begin
+      // For 32-bit: Check for signed overflow
+      // Both positive and result is negative -> positive overflow
+      if (~fu_data_i.operand_a[31] && ~fu_data_i.operand_b[31] && extended_result[31]) begin
+        addx_result = 32'h7FFFFFFF;  // Saturate to max positive
+      end
+      // Both negative and result is positive -> negative overflow
+      else if (fu_data_i.operand_a[31] && fu_data_i.operand_b[31] && ~extended_result[31]) begin
+        addx_result = 32'h80000000;  // Saturate to min negative
+      end
+      else begin
+        // No overflow - use normal result
         addx_result = extended_result[31:0];
       end
     end else begin // 64-bit
-      // For 64-bit operations
-      if (extended_result[64]) begin
-        // Overflow occurred - saturate based on operand signs
-        if (fu_data_i.operand_a[63] == fu_data_i.operand_b[63]) begin
-          // Same signs - saturate to max/min
-          addx_result = fu_data_i.operand_a[63] ? 64'h8000000000000000 : 64'h7FFFFFFFFFFFFFFF;
-        end else begin
-          // Different signs - no overflow possible, just use result
-          addx_result = extended_result[63:0];
-        end
-      end else begin
+      // For 64-bit: Check for signed overflow
+      // Both positive and result is negative -> positive overflow
+      if (~fu_data_i.operand_a[63] && ~fu_data_i.operand_b[63] && extended_result[63]) begin
+        addx_result = 64'h7FFFFFFFFFFFFFFF;  // Saturate to max positive
+      end
+      // Both negative and result is positive -> negative overflow
+      else if (fu_data_i.operand_a[63] && fu_data_i.operand_b[63] && ~extended_result[63]) begin
+        addx_result = 64'h8000000000000000;  // Saturate to min negative
+      end
+      else begin
+        // No overflow - use normal result
         addx_result = extended_result[63:0];
       end
     end
@@ -85,40 +85,10 @@ module addx_accel
   end
 
   always_ff @(posedge clk_i) begin
-    if (rst_ni && fu_data_i.valid) begin
-      $display("================================================================================");
-      $display("[ADDX ACCELERATOR] Execution at time %0t (Cycle: %0d)", $time, cycle_counter);
-      $display("--------------------------------------------------------------------------------");
-      $display("  Operand A:  0x%0h (%0d)", fu_data_i.operand_a, $signed(fu_data_i.operand_a));
-      $display("  Operand B:  0x%0h (%0d)", fu_data_i.operand_b, $signed(fu_data_i.operand_b));
-      $display("  Result:     0x%0h (%0d)", addx_result, $signed(addx_result));
-
-      if (CVA6Cfg.IS_XLEN32) begin
-        if (extended_result[32]) begin
-          if (fu_data_i.operand_a[31] == fu_data_i.operand_b[31]) begin
-            $display("  Status:     OVERFLOW DETECTED - Result SATURATED to %s",
-                     fu_data_i.operand_a[31] ? "MIN (0x80000000)" : "MAX (0x7FFFFFFF)");
-          end else begin
-            $display("  Status:     Overflow bit set but operands have different signs (Normal)");
-          end
-        end else begin
-          $display("  Status:     Normal addition (No overflow)");
-        end
-      end else begin
-        if (extended_result[64]) begin
-          if (fu_data_i.operand_a[63] == fu_data_i.operand_b[63]) begin
-            $display("  Status:     OVERFLOW DETECTED - Result SATURATED to %s",
-                     fu_data_i.operand_a[63] ? "MIN (0x8000000000000000)" : "MAX (0x7FFFFFFFFFFFFFFF)");
-          end else begin
-            $display("  Status:     Overflow bit set but operands have different signs (Normal)");
-          end
-        end else begin
-          $display("  Status:     Normal addition (No overflow)");
-        end
-      end
-
-      $display("  Mode:       %s-bit", CVA6Cfg.IS_XLEN32 ? "32" : "64");
-      $display("================================================================================");
+    if (rst_ni) begin
+      // Debug output removed to avoid accessing non-existent fu_data_i.valid field
+      // Original debug code accessed fu_data_i.valid which doesn't exist in fu_data_t
+      // The accelerator performs saturating addition with overflow detection
     end
   end
   // synthesis translate_on

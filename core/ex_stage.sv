@@ -377,7 +377,7 @@ module ex_stage
       .csr_addr_o
   );
 
-  assign flu_valid_o = |one_cycle_select | mult_valid;
+  assign flu_valid_o = |one_cycle_select | mult_valid | |addx_accel_valid_i;
 
   // result MUX
   always_comb begin

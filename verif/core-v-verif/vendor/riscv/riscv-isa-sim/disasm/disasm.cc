@@ -861,6 +861,8 @@ void disassembler_t::add_instructions(const isa_parser_t* isa)
   DEFINE_RTYPE(srlw);
   DEFINE_RTYPE(sraw);
 
+  DEFINE_RTYPE(addx);
+
   DEFINE_NOARG(ecall);
   DEFINE_NOARG(ebreak);
   DEFINE_NOARG(mret);

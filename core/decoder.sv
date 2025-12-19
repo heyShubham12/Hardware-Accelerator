@@ -1921,7 +1921,7 @@ module decoder
       end
     end
 
-    // a debug request has precedence over everything else
+    // a debug request has precendece over everything else
     if (CVA6Cfg.DebugEn && debug_req_i && !debug_mode_i) begin
       instruction_o.ex.valid = 1'b1;
       instruction_o.ex.cause = riscv::DEBUG_REQUEST;

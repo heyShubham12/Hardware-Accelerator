@@ -320,8 +320,6 @@
 #define MASK_ANDI  0x707f
 #define MATCH_ADD 0x33
 #define MASK_ADD  0xfe00707f
-#define MATCH_ADDX 0xb                                                  │
-#define MASK_ADDX  0xfe00707f
 #define MATCH_SUB 0x40000033
 #define MASK_SUB  0xfe00707f
 #define MATCH_SLL 0x1033
