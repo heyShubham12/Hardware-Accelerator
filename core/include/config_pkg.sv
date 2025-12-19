@@ -154,6 +154,10 @@ package config_pkg;
     bit                          CvxifEn;
     // Coprocessor type
     copro_type_t                 CoproType;
+    // Enable custom accelerators
+    bit                          EnableAccelerator;
+    // Enable ADDX custom accelerator
+    bit                          EnableADDX;
     // NOC bus type
     noc_type_e                   NOCType;
     // AXI address width

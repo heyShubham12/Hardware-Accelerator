@@ -18,8 +18,8 @@ package build_config_pkg;
     bit XF16ALTVec = CVA6Cfg.XF16ALT & CVA6Cfg.XFVec & FLen>16; // FP16ALT vectors available if vectors and larger fmt enabled
     bit XF8Vec     = CVA6Cfg.XF8     & CVA6Cfg.XFVec & FLen>8;  // FP8 vectors available if vectors and larger fmt enabled
 
-    bit EnableAccelerator = CVA6Cfg.RVV;  // Currently only used by V extension (Ara)
-    bit EnableADDX = 1'b1;  // ADDX custom accelerator enabled
+    bit EnableAccelerator = CVA6Cfg.EnableAccelerator;  // Enable custom accelerators
+    bit EnableADDX = CVA6Cfg.EnableADDX;  // ADDX custom accelerator enabled
     int unsigned NrWbPorts = (CVA6Cfg.CvxifEn || EnableAccelerator) ? 5 : 4;
 
     int unsigned ICACHE_INDEX_WIDTH = $clog2(CVA6Cfg.IcacheByteSize / CVA6Cfg.IcacheSetAssoc);
